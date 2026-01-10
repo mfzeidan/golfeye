@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golf Ball Tracker - Compass</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Golf Ball Tracker</h1>
+        
+        <div class="compass-container">
+            <div class="compass">
+                <div class="compass-markers">
+                    <div class="marker marker-n">N</div>
+                    <div class="marker marker-e">E</div>
+                    <div class="marker marker-s">S</div>
+                    <div class="marker marker-w">W</div>
+                </div>
+                <div class="compass-needle" id="compass-needle"></div>
+                <div class="compass-center"></div>
+            </div>
+        </div>
+        
+        <div class="direction-display" id="direction-display">--°</div>
+        <div class="distance-display" id="distance-display">-- m</div>
+        
+        <div class="status-panel">
+            <div class="status-item">
+                <span class="status-label">Status:</span>
+                <span class="status-value status-waiting" id="status-value">Waiting</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Confidence:</span>
+                <span class="status-value" id="confidence-value">0%</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Camera:</span>
+                <span class="status-value" id="camera-status-value">Disconnected</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Launch Detected:</span>
+                <span class="status-value" id="launch-status-value">No</span>
+            </div>
+        </div>
+        
+        <button class="reset-button" id="reset-button">Reset Tracking</button>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

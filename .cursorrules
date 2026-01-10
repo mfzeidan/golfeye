@@ -1,0 +1,150 @@
+# Golf Ball Tracker - Cursor Rules
+
+## Project Overview
+
+This is a golf ball tracking compass system mounted on a golf cart (push or ride) that helps golfers locate their ball after hitting it. The camera on the cart tracks the golf ball's trajectory from launch to landing, then provides directional guidance via a web interface compass. The system is especially useful for errant shots that go into woods, bunkers, or other difficult-to-see areas. Currently prototyped on Mac, but designed for Raspberry Pi deployment.
+
+**Key Workflow:**
+
+1. Camera on cart observes golfer hitting the ball
+2. System detects ball launch and tracks flight trajectory
+3. Predicts landing location (especially when ball goes out of view)
+4. Compass guides golfer to the estimated landing location
+
+## Technology Stack
+
+- **Language**: Python 3.9+
+- **Computer Vision**: OpenCV (cv2) for image processing and ball detection
+- **ML Framework**: TensorFlow Lite or PyTorch (lightweight models suitable for Raspberry Pi)
+- **Web Framework**: Flask or FastAPI for the web interface
+- **Frontend**: HTML/CSS/JavaScript for compass visualization
+- **Camera**: OpenCV VideoCapture (works with Mac camera for testing, Raspberry Pi camera module for production)
+
+## Project Structure
+
+```
+golfeye/
+├── src/
+│   ├── detection/
+│   │   ├── color_detector.py      # Color-based ball detection
+│   │   ├── ml_detector.py         # ML model-based detection
+│   │   ├── hybrid_detector.py    # Combines both approaches
+│   │   └── launch_detector.py    # Detects when ball is hit/launched
+│   ├── tracking/
+│   │   ├── ball_tracker.py        # Tracks ball position over frames
+│   │   ├── trajectory_predictor.py # Predicts ball trajectory and landing
+│   │   └── kalman_tracker.py      # Kalman filter for smooth tracking
+│   ├── compass/
+│   │   └── direction_calculator.py # Calculates direction to landing location
+│   ├── web/
+│   │   ├── app.py                 # Flask/FastAPI web server
+│   │   └── static/                # Frontend assets (compass UI)
+│   └── camera/
+│       └── camera_handler.py      # Camera abstraction layer
+├── models/                         # ML models (if using)
+├── tests/                          # Unit and integration tests
+├── requirements.txt                # Python dependencies
+└── README.md
+```
+
+## Code Style & Best Practices
+
+- Follow PEP 8 style guide
+- Use type hints for function parameters and return types
+- Write docstrings for all classes and functions
+- Keep functions focused and single-purpose
+- Use meaningful variable names (e.g., `ball_position`, not `bp`)
+- Handle camera initialization failures gracefully
+- Implement proper error handling for all I/O operations
+
+## Raspberry Pi Considerations
+
+- **Performance**: Optimize for Raspberry Pi's limited CPU/RAM
+  - Use efficient OpenCV operations (avoid heavy processing in tight loops)
+  - Consider using lower resolution video feeds (e.g., 640x480)
+  - Cache ML model predictions when possible
+- **Camera**: Support both Mac camera (for testing) and Raspberry Pi Camera Module v2/v3
+- **Dependencies**: Prefer lightweight libraries; avoid heavy dependencies
+- **Resource Management**: Always release camera resources properly
+
+## Computer Vision Guidelines
+
+- **Color Detection**: Use HSV color space for better white ball detection in varying lighting
+- **Contour Filtering**: Filter contours by area, circularity, and aspect ratio
+- **Frame Processing**: Process every Nth frame for performance (e.g., every 3rd frame)
+- **Noise Reduction**: Apply Gaussian blur and morphological operations to reduce noise
+- **Tracking**: Use Kalman filter for smooth ball position updates and trajectory prediction
+- **Coordinate System**: Use camera center as origin (0,0), with positive X right, positive Y down
+- **Launch Detection**: Monitor for sudden ball movement or appearance to detect when ball is hit
+- **Trajectory Analysis**: Track ball path through multiple frames to estimate trajectory
+- **Out-of-View Handling**: When ball disappears (goes into woods/bunkers), use last known trajectory to predict landing location
+
+## Detection & Tracking Strategy
+
+- **Hybrid Detection Approach**: 
+  1. First pass: Color-based detection (fast, good for white balls)
+  2. Second pass: ML verification (more accurate, handles edge cases)
+  3. Combine results with confidence scores
+- **Launch Detection**: 
+  - Monitor for rapid ball movement or sudden appearance
+  - Detect when ball transitions from stationary (in golfer's hand/club) to moving
+  - Use motion detection in golfer area to trigger tracking
+- **Trajectory Tracking**:
+  - Track ball position across frames using Kalman filter
+  - Build trajectory history (position, velocity, acceleration)
+  - Handle occlusions (ball behind trees, etc.) using prediction
+- **Landing Prediction**:
+  - When ball goes out of view, use trajectory physics to predict landing
+  - Account for ball flight characteristics (parabolic path, air resistance)
+  - Estimate landing location based on last known position and velocity
+- **Fallback**: If ML model unavailable, use color detection only
+- **Confidence Thresholds**: Tune detection confidence thresholds for accuracy vs. false positives
+- **Errant Shot Handling**: System should be robust for shots that go into difficult terrain (woods, bunkers) where ball may disappear quickly
+
+## Web Interface Requirements
+
+- **Real-time Updates**: Use WebSockets or Server-Sent Events for live compass updates
+- **Compass Display**: Visual compass showing direction to predicted landing location (0-360 degrees)
+- **Distance Indicator**: Show approximate distance to landing location if calculable (requires camera calibration)
+- **Status Indicators**: 
+  - Ball tracking status (tracking, lost, predicted landing)
+  - Detection confidence
+  - Camera status
+  - Launch detection status
+- **Trajectory Visualization**: Optional overlay showing ball path (helpful for debugging/verification)
+- **Mobile-Friendly**: Responsive design for viewing on phone/tablet while walking to ball location
+- **Reset Button**: Allow golfer to reset/start new shot tracking
+
+## Testing Strategy
+
+- **Mac Testing**: Use Mac camera for development and testing
+- **Mock Camera**: Support mock/video file input for unit testing
+- **Test Data**: Include sample golf ball images/videos in `tests/data/`
+- **Performance Tests**: Measure FPS and detection accuracy
+
+## Error Handling
+
+- Handle camera disconnection gracefully
+- Provide clear error messages for common issues
+- Log errors appropriately (consider using Python logging module)
+- Implement timeout for detection operations
+
+## Configuration
+
+- Use environment variables or config file for:
+  - Camera index/device path
+  - Detection thresholds (color, ML confidence)
+  - ML model paths
+  - Web server port
+  - Frame processing rate
+  - Trajectory prediction parameters (gravity, air resistance estimates)
+  - Launch detection sensitivity
+  - Kalman filter tuning parameters
+  - Camera calibration data (for distance estimation)
+
+## Documentation
+
+- Include README with setup instructions for both Mac and Raspberry Pi
+- Document camera calibration if needed
+- Include examples of usage
+- Document ML model training process if applicable
