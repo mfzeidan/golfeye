@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Golf Ball Tracker - Debug</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='debug.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Golf Ball Tracker - Debug Mode</h1>
+        <div class="nav-links">
+            <a href="/">← Back to Compass</a>
+        </div>
+        
+        <div class="main-content">
+            <div class="video-section">
+                <h2>Camera Feed with Detections</h2>
+                <div class="video-container">
+                    <img id="camera-feed" src="" alt="Camera feed" />
+                    <div class="video-overlay">
+                        <div class="status-badge" id="connection-status">Connecting...</div>
+                    </div>
+                </div>
+                
+                <h2>Color Detection Mask</h2>
+                <div class="video-container">
+                    <img id="mask-feed" src="" alt="Detection mask" />
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <div class="info-panel">
+                    <h2>Detection Info</h2>
+                    <div class="info-item">
+                        <span class="label">Frame Count:</span>
+                        <span class="value" id="frame-count">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">FPS:</span>
+                        <span class="value" id="fps">0.0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Detections Found:</span>
+                        <span class="value" id="detection-count">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Best Detection:</span>
+                        <span class="value" id="best-detection">None</span>
+                    </div>
+                </div>
+                
+                <div class="info-panel">
+                    <h2>Detection Details</h2>
+                    <div id="detections-list" class="detections-list">
+                        <p class="no-data">No detections yet</p>
+                    </div>
+                </div>
+                
+                <div class="info-panel">
+                    <h2>Configuration</h2>
+                    <div id="config-list" class="config-list">
+                        <p class="no-data">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='debug.js') }}"></script>
+</body>
+</html>
